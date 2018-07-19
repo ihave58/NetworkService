@@ -3,9 +3,7 @@ import NetworkService from "./networkService";
 
 let Id = 0;
 
-export default class APIResponse {
-    private readonly promise: Promise;
-
+export default class APIResponse extends Promise {
     private onResolve: Function;
     private onReject: Function;
 
@@ -13,10 +11,12 @@ export default class APIResponse {
     readonly request: APIRequest;
     isAborted: Boolean = false;
 
-    // You shall not be able to instantiate APIResponse without a Network request promise in hand
+    // You shall not be able to instantiate APIResponse without
+    // a Network request promise and API Request in hand
     constructor(requestPromise: Promise, request: APIRequest) {
+        super();
+
         this.request = request;
-        this.promise = requestPromise;
     }
 
     abort(callback): Boolean {
@@ -26,15 +26,15 @@ export default class APIResponse {
             .abort(this.responseId, callback);
     }
 
-    then(resolve: Function, reject?: Function) {
+    then(resolve: Function, reject?: Function): Promise {
         this.onResolve = resolve;
         this.onReject = reject;
 
-        this.promise.then(this.onPromiseResolve, this.onPromiseReject);
+        return super.then(this.onPromiseResolve, this.onPromiseReject);
     }
 
-    catch(callback) {
-        return this.promise.catch(callback);
+    catch(callback): Promise {
+        return super.catch(callback);
     }
 
     private onPromiseResolve(response: Object): Promise {
@@ -44,7 +44,7 @@ export default class APIResponse {
             this.onResolve(response);
         }
 
-        return this.promise;
+        return this;
     }
 
     private onPromiseReject(response: Object): Promise {
@@ -54,6 +54,6 @@ export default class APIResponse {
             this.onReject(response);
         }
 
-        return this.promise;
+        return this;
     }
 }
