@@ -1,14 +1,14 @@
 import APIRequest from "./APIRequest";
 import APIResponse from "./APIResponse";
-import {} from "../urlBuilder";
 import xhr from "xhr-async";
 
 class NetworkService {
     private static mapToFetchParams(request: APIRequest): Object {
-        const requestParams = request.getParams();
-
         return {
-            key: requestParams.someOtherKey
+            method: request.method,
+            url: request.toString()
+            // ...
+            // ...
             // construct and map the requestParams to fetchParams format.
         };
     }
